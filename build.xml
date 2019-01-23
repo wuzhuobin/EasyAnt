@@ -1,25 +1,73 @@
-<project name="MyProject" default="dist" basedir=".">
+<project name="MakeASpiral" default="build" basedir=".">
   <description>
-    simple example build file
+    Simple example.
   </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
+  <!-- Predefine javac -->
+  <presetdef name="javac">
+    <javac includeantruntime="false"></javac>
+  </presetdef>
+  <!-- Predefine properties -->
+  <loadproperties srcFile="build.properties"></loadproperties>
+  <property name="main-class" value="wuzhuobin.Main"></property>
+  <property name="test-class" value="wuzhuobin.TestMain"></property>
+  <property name="src.dir" location="src"></property>
+  <property name="build.dir" location="build"></property>
+  <property name="lib.dir" location="${build.dir}/lib"></property>
+  <property name="classes.dir" location="${build.dir}/classes"></property>
+  <property name="bin.dir" location="${build.dir}/bin"></property>
 
-  <target name="init">
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
+  <target name="compile">
+    <mkdir dir="${build.dir}"></mkdir>
+    <mkdir dir="${classes.dir}"></mkdir>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+    </javac>
   </target>
 
-  <target name="compile" depends="init"
-        description="compile the source">
-    <!-- Compile the Java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}"/>
+  <target name="build" depends="compile">
+    <mkdir dir="${lib.dir}"></mkdir>
+    <mkdir dir="${bin.dir}"></mkdir>
+    <jar basedir="${classes.dir}" destfile="${bin.dir}/${ant.project.name}.jar">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"></attribute>
+      </manifest>
+    </jar>
   </target>
 
-  <target name="clean"
-        description="clean up">
-    <!-- Delete the ${build} directory trees -->
-    <delete dir="${build}"/>
+  <target name="clean">
+    <delete dir="${build.dir}"></delete>
+    <delete dir="${bin.dir}"></delete>
   </target>
+
+  <target name="rebuild" depends="clean, build"></target>
+
+  <target name="run" depends="build">
+    <java fork="true" classname="${main-class}">
+  	  <sysproperty key="java.library.path" path="${bin.dir}"></sysproperty>
+      <classpath>
+        <pathelement location="${bin.dir}/${ant.project.name}.jar"></pathelement>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"></include>
+        </fileset>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="test" depends="build">
+    <copy todir="${lib.dir}">
+      <fileset dir="${ant.home}/lib"></fileset>
+    </copy>
+    <ant antfile="fetch.xml" target="junit">
+      <property name="dest" value="system"></property>
+    </ant>
+    <junit printsummary="yes">
+      <test name="${test-class}"></test>
+      <classpath>
+        <pathelement location="${bin.dir}/${ant.project.name}.jar"></pathelement>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"></include>
+        </fileset>
+      </classpath>
+    </junit>
+  </target>
+
 </project>
