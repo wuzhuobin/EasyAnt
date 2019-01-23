@@ -10,7 +10,7 @@
   <loadproperties srcFile="build.properties"></loadproperties>
   <property name="main-class" value="wuzhuobin.Main"></property>
   <property name="test-class" value="test.wuzhuobin.TestMain"></property>
-  <property name="src.dir" location="src/wuzhuobin"></property>
+  <property name="src.dir" location="src"></property>
   <property name="build.dir" location="build"></property>
   <property name="lib.dir" location="${build.dir}/lib"></property>
   <property name="classes.dir" location="${build.dir}/classes"></property>
@@ -19,8 +19,7 @@
   <target name="compile">
     <mkdir dir="${build.dir}"></mkdir>
     <mkdir dir="${classes.dir}"></mkdir>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}">
-    </javac>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="test/**"></javac>
   </target>
 
   <target name="build" depends="compile">
@@ -59,7 +58,15 @@
     </ant>
   </target>
 
-  <target name="test" depends="build, junit">
+  <target name="test" depends="build">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" includes="test/**">
+      <classpath>
+        <pathelement location="${bin.dir}/${ant.project.name}.jar"></pathelement>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"></include>
+        </fileset>
+      </classpath>
+    </javac>
     <junit printsummary="true" showoutput="true">
       <test name="${test-class}"></test>
       <classpath>
