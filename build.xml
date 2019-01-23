@@ -9,8 +9,8 @@
   <!-- Predefine properties -->
   <loadproperties srcFile="build.properties"></loadproperties>
   <property name="main-class" value="wuzhuobin.Main"></property>
-  <property name="test-class" value="wuzhuobin.TestMain"></property>
-  <property name="src.dir" location="src"></property>
+  <property name="test-class" value="test.wuzhuobin.TestMain"></property>
+  <property name="src.dir" location="src/wuzhuobin"></property>
   <property name="build.dir" location="build"></property>
   <property name="lib.dir" location="${build.dir}/lib"></property>
   <property name="classes.dir" location="${build.dir}/classes"></property>
@@ -53,16 +53,14 @@
   </target>
 
   <target name="junit">
-    <copy todir="${lib.dir}">
-      <fileset dir="${ant.home}/lib"></fileset>
-    </copy>
+    <copy file="${ant.home}/lib/libraries.properties" todir="${lib.dir}"></copy>
     <ant antfile="fetch.xml" target="junit">
       <property name="dest" value="system"></property>
     </ant>
   </target>
-  
+
   <target name="test" depends="build, junit">
-    <junit printsummary="yes">
+    <junit printsummary="true" showoutput="true">
       <test name="${test-class}"></test>
       <classpath>
         <pathelement location="${bin.dir}/${ant.project.name}.jar"></pathelement>
