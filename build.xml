@@ -52,13 +52,16 @@
     </java>
   </target>
 
-  <target name="test" depends="build">
+  <target name="junit">
     <copy todir="${lib.dir}">
       <fileset dir="${ant.home}/lib"></fileset>
     </copy>
     <ant antfile="fetch.xml" target="junit">
       <property name="dest" value="system"></property>
     </ant>
+  </target>
+  
+  <target name="test" depends="build, junit">
     <junit printsummary="yes">
       <test name="${test-class}"></test>
       <classpath>
